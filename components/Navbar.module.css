@@ -1,0 +1,7 @@
+.navLink {
+    transition: color 0.3s ease;
+}
+
+.navLink:hover {
+    color: #90cdf4; /* Tailwind's blue-200 */
+}

@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+.navLink {
+  transition: color 0.3s ease;
+}
+
+.navLink:hover {
+  color: #90cdf4; /* Tailwind's blue-200 */
+}
+
+
+@keyframes text-gradient {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+.animate-text {
+  animation: text-gradient 5s ease infinite;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
