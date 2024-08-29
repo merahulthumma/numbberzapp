@@ -7,17 +7,17 @@ import ContactSection from "./ContactSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import TaxCalculator from "@/components/TaxCalculator";
+import CustomerReviews from "@/components/CustomerReviews";
 
 const ClientHomeWrapper: React.FC = () => {
   return (
     <>
       <HeroSection />
-        <TaxCalculator />
+      <TaxCalculator />
       <FeaturedServices />
+      <CustomerReviews />
       <ContactSection />
-        <FAQSection />
-        <Footer />
-
+      <FAQSection />
     </>
   );
 };
