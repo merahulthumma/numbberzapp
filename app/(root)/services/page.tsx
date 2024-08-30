@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+<<<<<<< HEAD
 import AnimatedIcon from "../../../components/AnimatedIcon";
 import ServicesClient from "./ServicesClient";
 
@@ -29,6 +30,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   title,
   description,
 }) => (
+=======
+import AnimatedIcon from "@/components/AnimatedIcon";
+import ServicesClient from "@/app/(root)/services/ServicesClient";
+
+const ServiceCard = ({ iconName, title, description }) => (
+>>>>>>> 7a5e0d206a10a4e1d1a93fdd3be62bafc41c8152
   <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-600 hover:border-blue-400 group">
     <div className="mb-4 group-hover:scale-110 transition-transform duration-300">
       <AnimatedIcon
@@ -45,11 +52,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   </div>
 );
 
+<<<<<<< HEAD
 interface SectionTitleProps {
   children: React.ReactNode;
 }
 
 const SectionTitle: React.FC<SectionTitleProps> = ({ children }) => (
+=======
+const SectionTitle = ({ children }) => (
+>>>>>>> 7a5e0d206a10a4e1d1a93fdd3be62bafc41c8152
   <h2 className="text-4xl font-bold text-center mb-12 animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent">
     {children}
   </h2>
