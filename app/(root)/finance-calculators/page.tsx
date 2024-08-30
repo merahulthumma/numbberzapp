@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import AnimatedIcon from "@/components/AnimatedIcon";
+import { motion, useAnimation } from "framer-motion";
+import AnimatedIcon from "../../../components/AnimatedIcon";
 import {
   Calculator,
   DollarSign,
@@ -18,9 +18,32 @@ import {
   CreditCard,
   Briefcase,
   Info,
+  LucideIcon,
 } from "lucide-react";
 
-const CalculatorCard = ({ iconName, title, description, link }) => (
+// Define a type for the icon names that AnimatedIcon accepts
+type AnimatedIconName =
+  | "Calculator"
+  | "DollarSign"
+  | "Home"
+  | "Shield"
+  | "TrendingUp"
+  | "PiggyBank"
+  | "Car";
+
+interface CalculatorCardProps {
+  iconName: AnimatedIconName;
+  title: string;
+  description: string;
+  link: string;
+}
+
+const CalculatorCard: React.FC<CalculatorCardProps> = ({
+  iconName,
+  title,
+  description,
+  link,
+}) => (
   <motion.div
     className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-600 hover:border-blue-400 group relative overflow-hidden"
     whileHover={{
@@ -47,7 +70,11 @@ const CalculatorCard = ({ iconName, title, description, link }) => (
   </motion.div>
 );
 
-const SectionTitle = ({ children }) => (
+interface SectionTitleProps {
+  children: React.ReactNode;
+}
+
+const SectionTitle: React.FC<SectionTitleProps> = ({ children }) => (
   <motion.h2
     className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent"
     initial={{ opacity: 0, y: -50 }}
@@ -58,7 +85,12 @@ const SectionTitle = ({ children }) => (
   </motion.h2>
 );
 
-const FeatureCard = ({ title, content }) => (
+interface FeatureCardProps {
+  title: string;
+  content: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, content }) => (
   <motion.div
     className="bg-gray-700 p-4 rounded-lg"
     initial={{ opacity: 0, y: 50 }}
@@ -70,10 +102,45 @@ const FeatureCard = ({ title, content }) => (
   </motion.div>
 );
 
+interface FloatingIconProps {
+  Icon: LucideIcon;
+  x: number;
+  y: number;
+  size: number;
+}
+
+const FloatingIcon: React.FC<FloatingIconProps> = ({ Icon, x, y, size }) => {
+  const controls = useAnimation();
+  useEffect(() => {
+    controls.start({
+      y: ["0%", "10%", "0%"],
+      rotate: [0, 360],
+      scale: [1, 1.2, 1],
+      transition: {
+        duration: 15,
+        repeat: Infinity,
+        repeatType: "reverse",
+        ease: "easeInOut",
+      },
+    });
+  }, [controls]);
+
+  return (
+    <motion.div
+      className="absolute text-blue-300 opacity-5"
+      style={{ left: `${x}%`, top: `${y}%` }}
+      animate={controls}
+    >
+      <Icon size={size} />
+    </motion.div>
+  );
+};
+
 export default function FinanceCalculatorsPage() {
   const [activeTab, setActiveTab] = useState("calculators");
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const calculators = [
+  const calculators: CalculatorCardProps[] = [
     {
       iconName: "Calculator",
       title: "ATO Tax Calculators",
@@ -100,32 +167,32 @@ export default function FinanceCalculatorsPage() {
       title: "Life Insurance and Income Protection",
       description:
         "Calculate your insurance needs and income protection requirements.",
-      link: "/finance-calculators/life-insurance-income-protection-calculators",
+      link: "/finance-calculators/life-insurance-and-income-protection-calculators",
     },
     {
       iconName: "TrendingUp",
       title: "Superannuation & Retirement",
       description:
         "Plan for your future with our superannuation and retirement calculators.",
-      link: "/finance-calculators/superannuation-retirement-calculators",
+      link: "/finance-calculators/superannuation-and-retirement-calculators",
     },
     {
       iconName: "PiggyBank",
       title: "Budgeting and Savings",
       description:
         "Take control of your finances with our budgeting and savings calculators.",
-      link: "/finance-calculators/budgeting-savings-calculators",
+      link: "/finance-calculators/budgeting-and-savings-calculators",
     },
     {
       iconName: "Car",
       title: "Personal and Car Loans",
       description:
         "Calculate repayments for personal and car loans with our easy-to-use tools.",
-      link: "/finance-calculators/personal-car-loan-calculators",
+      link: "/finance-calculators/personal-and-car-loan-calculators",
     },
   ];
 
-  const features = [
+  const features: FeatureCardProps[] = [
     {
       title: "Up-to-date with Australian Regulations",
       content:
@@ -146,7 +213,7 @@ export default function FinanceCalculatorsPage() {
     },
   ];
 
-  const financialTips = [
+  const financialTips: FeatureCardProps[] = [
     {
       title: "Budgeting",
       content:
@@ -169,9 +236,36 @@ export default function FinanceCalculatorsPage() {
     },
   ];
 
+  const floatingIcons: FloatingIconProps[] = [
+    { Icon: Calculator, x: 10, y: 20, size: 48 },
+    { Icon: DollarSign, x: 80, y: 15, size: 64 },
+    { Icon: ChartBar, x: 30, y: 70, size: 56 },
+    { Icon: PieChart, x: 70, y: 60, size: 72 },
+    { Icon: TrendingUp, x: 20, y: 40, size: 52 },
+    { Icon: FileText, x: 90, y: 80, size: 60 },
+    { Icon: CreditCard, x: 40, y: 90, size: 48 },
+    { Icon: Briefcase, x: 60, y: 30, size: 68 },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <motion.div
+          className="absolute inset-0 opacity-10"
+          animate={{
+            backgroundImage: [
+              "radial-gradient(circle at 20% 30%, #1e3a8a 0%, transparent 70%)",
+              "radial-gradient(circle at 80% 70%, #1e40af 0%, transparent 70%)",
+            ],
+          }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+        />
+        {floatingIcons.map((icon, index) => (
+          <FloatingIcon key={index} {...icon} />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         <motion.header
           className="text-center mb-16"
           initial={{ opacity: 0, y: -50 }}
@@ -183,7 +277,7 @@ export default function FinanceCalculatorsPage() {
           </h1>
           <p className="text-xl max-w-3xl mx-auto">
             Make informed financial decisions with our suite of calculators.
-            From taxes to loans, we've got you covered with Australian
+            From taxes to loans, we&apos;ve got you covered with Australian
             standards-compliant tools.
           </p>
         </motion.header>

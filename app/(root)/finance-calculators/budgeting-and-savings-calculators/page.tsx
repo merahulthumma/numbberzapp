@@ -19,13 +19,20 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const BudgetingAndSavingsCalculators = () => {
+interface CalculationResult {
+  surplus: number;
+  savingsAmount: number;
+  monthsToGoal: number;
+}
+
+const BudgetingAndSavingsCalculators: React.FC = () => {
   const [calculatorType, setCalculatorType] = useState("budget");
   const [income, setIncome] = useState(5000);
   const [expenses, setExpenses] = useState(3000);
   const [savingsGoal, setSavingsGoal] = useState(10000);
   const [savingsRate, setSavingsRate] = useState(10);
-  const [calculationResult, setCalculationResult] = useState(null);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -48,13 +55,12 @@ const BudgetingAndSavingsCalculators = () => {
     const savingsAmount = (income * savingsRate) / 100;
     const monthsToGoal = savingsGoal / savingsAmount;
 
-    setCalculationResult({
+    setCalculationResult((prevState) => ({
       surplus,
       savingsAmount,
       monthsToGoal,
-    });
+    }));
   };
-
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(20);
@@ -64,12 +70,15 @@ const BudgetingAndSavingsCalculators = () => {
       } Calculation Summary`,
       105,
       15,
-      null,
-      null,
-      "center"
+      { align: "center" }
     );
     doc.setFontSize(12);
-    doc.text("Generated from NumberzInsight", 105, 25, null, null, "center");
+    doc.text(
+      "Thanks for using NumberzInsight Services, Next Time Visit numberz.com.au For more",
+      105,
+      25,
+      { align: "center" }
+    );
 
     doc.setFontSize(14);
     doc.text("Input Details:", 20, 40);
@@ -79,22 +88,23 @@ const BudgetingAndSavingsCalculators = () => {
     doc.text(`Savings Rate: ${savingsRate}%`, 30, 80);
 
     doc.text("Results:", 20, 100);
-    doc.text(
-      `Monthly Surplus: $${calculationResult.surplus.toFixed(2)}`,
-      30,
-      110
-    );
-    doc.text(
-      `Monthly Savings: $${calculationResult.savingsAmount.toFixed(2)}`,
-      30,
-      120
-    );
-    doc.text(
-      `Months to Goal: ${calculationResult.monthsToGoal.toFixed(1)}`,
-      30,
-      130
-    );
-
+    if (calculationResult) {
+      doc.text(
+        `Monthly Surplus: $${calculationResult.surplus.toFixed(2)}`,
+        30,
+        110
+      );
+      doc.text(
+        `Monthly Savings: $${calculationResult.savingsAmount.toFixed(2)}`,
+        30,
+        120
+      );
+      doc.text(
+        `Months to Goal: ${calculationResult.monthsToGoal.toFixed(1)}`,
+        30,
+        130
+      );
+    }
     doc.save(`${calculatorType}_calculation_summary.pdf`);
   };
 

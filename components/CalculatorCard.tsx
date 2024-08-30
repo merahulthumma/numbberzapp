@@ -3,10 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import AnimatedIcon from "@/components/AnimatedIcon";
+import AnimatedIcon from "./AnimatedIcon";
+import * as LucideIcons from "lucide-react";
 
 interface CalculatorCardProps {
-  iconName: string;
+  iconName: keyof typeof LucideIcons;
   title: string;
   description: string;
   link: string;

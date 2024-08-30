@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import ClientHomeWrapper from "@/components/ClientHomeWrapper";
+import ClientHomeWrapper from "../components/ClientHomeWrapper";
 
 export const metadata: Metadata = {
   title: "NumberzInsight | Futuristic Accounting Services",

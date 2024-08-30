@@ -29,9 +29,9 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const SimpleBudgetCalculatorPage = () => {
-  const [income, setIncome] = useState(0);
-  const [expenses, setExpenses] = useState({
+const SimpleBudgetCalculatorPage: React.FC = () => {
+  const [income, setIncome] = useState<number>(0);
+  const [expenses, setExpenses] = useState<Record<string, number>>({
     Housing: 0,
     Transportation: 0,
     Food: 0,
@@ -42,26 +42,34 @@ const SimpleBudgetCalculatorPage = () => {
     Debt: 0,
   });
 
-  const [savings, setSavings] = useState(0);
+  const [savings, setSavings] = useState<number>(0);
 
   useEffect(() => {
     const totalExpenses = Object.values(expenses).reduce((a, b) => a + b, 0);
     setSavings(income - totalExpenses);
   }, [income, expenses]);
 
-  const handleIncomeChange = (value) => {
-    setIncome(parseFloat(value) || 0);
+  const handleIncomeChange = (value: string) => {
+    setIncome((prevIncome) => parseFloat(value) || prevIncome);
   };
 
-  const handleExpenseChange = (category, value) => {
-    setExpenses({ ...expenses, [category]: parseFloat(value) || 0 });
+  const handleExpenseChange = (category: string, value: string) => {
+    setExpenses((prevExpenses) => ({
+      ...prevExpenses,
+      [category]: parseFloat(value) || 0,
+    }));
   };
-
-  const handleIncrement = (setter, value, step = 100) => {
+  const handleIncrement = (
+    setter: React.Dispatch<React.SetStateAction<number>>,
+    step: number = 100
+  ) => {
     setter((prevValue) => parseFloat((prevValue + step).toFixed(2)));
   };
 
-  const handleDecrement = (setter, value, step = 100) => {
+  const handleDecrement = (
+    setter: React.Dispatch<React.SetStateAction<number>>,
+    step: number = 100
+  ) => {
     setter((prevValue) => parseFloat(Math.max(0, prevValue - step).toFixed(2)));
   };
 
@@ -104,16 +112,11 @@ const SimpleBudgetCalculatorPage = () => {
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(20);
-    doc.text("Budget Summary", 105, 15, null, null, "center");
+    doc.text("Budget Summary", 105, 15, { align: "center" });
     doc.setFontSize(12);
-    doc.text(
-      "Generated and downloaded from Numberz Insight",
-      105,
-      25,
-      null,
-      null,
-      "center"
-    );
+    doc.text("Generated and downloaded from Numberz Insight", 105, 25, {
+      align: "center",
+    });
 
     doc.setFontSize(16);
     doc.text("Income:", 20, 40);
@@ -265,13 +268,14 @@ const SimpleBudgetCalculatorPage = () => {
                 <label className="block text-sm font-medium text-gray-400">
                   {category}
                 </label>
+
                 <div className="flex items-center">
                   <button
                     onClick={() =>
-                      handleDecrement(
-                        (val) => handleExpenseChange(category, val),
-                        expenses[category]
-                      )
+                      setExpenses((prevExpenses) => ({
+                        ...prevExpenses,
+                        [category]: Math.max(0, prevExpenses[category] - 100),
+                      }))
                     }
                     className="px-3 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors"
                   >
@@ -288,10 +292,10 @@ const SimpleBudgetCalculatorPage = () => {
                   />
                   <button
                     onClick={() =>
-                      handleIncrement(
-                        (val) => handleExpenseChange(category, val),
-                        expenses[category]
-                      )
+                      setExpenses((prevExpenses) => ({
+                        ...prevExpenses,
+                        [category]: prevExpenses[category] + 100,
+                      }))
                     }
                     className="px-3 py-2 bg-green-500 text-white rounded-r hover:bg-green-600 transition-colors"
                   >

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import {
@@ -19,12 +18,19 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const PersonalAndCarLoanCalculators = () => {
-  const [loanType, setLoanType] = useState("personal");
-  const [loanAmount, setLoanAmount] = useState(10000);
-  const [interestRate, setInterestRate] = useState(5.5);
-  const [loanTerm, setLoanTerm] = useState(3);
-  const [calculationResult, setCalculationResult] = useState(null);
+interface CalculationResult {
+  monthlyPayment: number;
+  totalPayment: number;
+  totalInterest: number;
+}
+
+const PersonalAndCarLoanCalculator: React.FC = () => {
+  const [loanType, setLoanType] = useState<"personal" | "car">("personal");
+  const [loanAmount, setLoanAmount] = useState<number>(10000);
+  const [interestRate, setInterestRate] = useState<number>(5.5);
+  const [loanTerm, setLoanTerm] = useState<number>(3);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -51,11 +57,11 @@ const PersonalAndCarLoanCalculators = () => {
     const totalPayment = monthlyPayment * numberOfPayments;
     const totalInterest = totalPayment - loanAmount;
 
-    setCalculationResult({
+    setCalculationResult((prevState) => ({
       monthlyPayment,
       totalPayment,
       totalInterest,
-    });
+    }));
   };
 
   const downloadPDF = () => {
@@ -67,12 +73,10 @@ const PersonalAndCarLoanCalculators = () => {
       } Loan Calculation Summary`,
       105,
       15,
-      null,
-      null,
-      "center"
+      { align: "center" }
     );
     doc.setFontSize(12);
-    doc.text("Generated from NumberzInsight", 105, 25, null, null, "center");
+    doc.text("Generated from NumberzInsight", 105, 25, { align: "center" });
 
     doc.setFontSize(14);
     doc.text("Input Details:", 20, 40);
@@ -80,22 +84,24 @@ const PersonalAndCarLoanCalculators = () => {
     doc.text(`Interest Rate: ${interestRate}%`, 30, 60);
     doc.text(`Loan Term: ${loanTerm} years`, 30, 70);
 
-    doc.text("Results:", 20, 90);
-    doc.text(
-      `Monthly Payment: $${calculationResult.monthlyPayment.toFixed(2)}`,
-      30,
-      100
-    );
-    doc.text(
-      `Total Payment: $${calculationResult.totalPayment.toFixed(2)}`,
-      30,
-      110
-    );
-    doc.text(
-      `Total Interest: $${calculationResult.totalInterest.toFixed(2)}`,
-      30,
-      120
-    );
+    if (calculationResult) {
+      doc.text("Results:", 20, 90);
+      doc.text(
+        `Monthly Payment: $${calculationResult.monthlyPayment.toFixed(2)}`,
+        30,
+        100
+      );
+      doc.text(
+        `Total Payment: $${calculationResult.totalPayment.toFixed(2)}`,
+        30,
+        110
+      );
+      doc.text(
+        `Total Interest: $${calculationResult.totalInterest.toFixed(2)}`,
+        30,
+        120
+      );
+    }
 
     doc.save(`${loanType}_loan_summary.pdf`);
   };
@@ -302,4 +308,4 @@ const PersonalAndCarLoanCalculators = () => {
   );
 };
 
-export default PersonalAndCarLoanCalculators;
+export default PersonalAndCarLoanCalculator;

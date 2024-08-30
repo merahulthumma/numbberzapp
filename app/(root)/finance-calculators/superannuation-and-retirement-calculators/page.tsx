@@ -18,14 +18,23 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const SuperannuationAndRetirementCalculators = () => {
-  const [calculatorType, setCalculatorType] = useState("superannuation");
+interface CalculationResult {
+  finalBalance: number;
+  totalContributions: number;
+  totalEarnings: number;
+}
+
+const SuperannuationAndRetirementCalculators: React.FC = () => {
+  const [calculatorType, setCalculatorType] = useState<
+    "superannuation" | "retirement"
+  >("superannuation");
   const [currentAge, setCurrentAge] = useState(30);
   const [retirementAge, setRetirementAge] = useState(65);
   const [currentBalance, setCurrentBalance] = useState(50000);
   const [annualContribution, setAnnualContribution] = useState(5000);
   const [returnRate, setReturnRate] = useState(7);
-  const [calculationResult, setCalculationResult] = useState(null);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -61,6 +70,8 @@ const SuperannuationAndRetirementCalculators = () => {
   };
 
   const downloadPDF = () => {
+    if (!calculationResult) return;
+
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text(
@@ -71,12 +82,10 @@ const SuperannuationAndRetirementCalculators = () => {
       } Calculation Summary`,
       105,
       15,
-      null,
-      null,
-      "center"
+      { align: "center" }
     );
     doc.setFontSize(12);
-    doc.text("Generated from NumberzInsight", 105, 25, null, null, "center");
+    doc.text("Generated from NumberzInsight", 105, 25, { align: "center" });
 
     doc.setFontSize(14);
     doc.text("Input Details:", 20, 40);

@@ -19,13 +19,20 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const LifeInsuranceAndIncomeProtectionCalculators = () => {
+interface CalculationResult {
+  monthlyPremium: number;
+  annualPremium: number;
+  totalCost: number;
+}
+
+const LifeInsuranceAndIncomeProtectionCalculators: React.FC = () => {
   const [calculatorType, setCalculatorType] = useState("lifeInsurance");
   const [coverageAmount, setCoverageAmount] = useState(500000);
   const [age, setAge] = useState(30);
   const [monthlyIncome, setMonthlyIncome] = useState(5000);
   const [coverageTerm, setCoverageTerm] = useState(20);
-  const [calculationResult, setCalculationResult] = useState(null);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -56,14 +63,16 @@ const LifeInsuranceAndIncomeProtectionCalculators = () => {
     const annualPremium = estimatedPremium * 12;
     const totalCost = annualPremium * coverageTerm;
 
-    setCalculationResult({
+    setCalculationResult((prevState) => ({
       monthlyPremium: estimatedPremium,
       annualPremium: annualPremium,
       totalCost: totalCost,
-    });
+    }));
   };
 
   const downloadPDF = () => {
+    if (!calculationResult) return;
+
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text(
@@ -74,12 +83,10 @@ const LifeInsuranceAndIncomeProtectionCalculators = () => {
       } Calculation Summary`,
       105,
       15,
-      null,
-      null,
-      "center"
+      { align: "center" }
     );
     doc.setFontSize(12);
-    doc.text("Generated from NumberzInsight", 105, 25, null, null, "center");
+    doc.text("Generated from NumberzInsight", 105, 25, { align: "center" });
 
     doc.setFontSize(14);
     doc.text("Input Details:", 20, 40);

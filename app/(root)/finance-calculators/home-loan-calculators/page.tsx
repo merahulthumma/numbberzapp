@@ -18,11 +18,18 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
-const HomeLoanCalculator = () => {
+interface CalculationResult {
+  monthlyPayment: number;
+  totalPayment: number;
+  totalInterest: number;
+}
+
+const HomeLoanCalculator: React.FC = () => {
   const [loanAmount, setLoanAmount] = useState(500000);
   const [interestRate, setInterestRate] = useState(3.5);
   const [loanTerm, setLoanTerm] = useState(30);
-  const [calculationResult, setCalculationResult] = useState(null);
+  const [calculationResult, setCalculationResult] =
+    useState<CalculationResult | null>(null);
   const controls = useAnimation();
 
   useEffect(() => {
@@ -49,19 +56,21 @@ const HomeLoanCalculator = () => {
     const totalPayment = monthlyPayment * numberOfPayments;
     const totalInterest = totalPayment - loanAmount;
 
-    setCalculationResult({
+    setCalculationResult((prevState) => ({
       monthlyPayment,
       totalPayment,
       totalInterest,
-    });
+    }));
   };
 
   const downloadPDF = () => {
+    if (!calculationResult) return;
+
     const doc = new jsPDF();
     doc.setFontSize(20);
-    doc.text("Home Loan Calculation Summary", 105, 15, null, null, "center");
+    doc.text("Home Loan Calculation Summary", 105, 15, { align: "center" });
     doc.setFontSize(12);
-    doc.text("Generated from NumberzInsight", 105, 25, null, null, "center");
+    doc.text("Generated from NumberzInsight", 105, 25, { align: "center" });
 
     doc.setFontSize(14);
     doc.text("Input Details:", 20, 40);

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import TaxCalculator from "@/components/TaxCalculator";
-import AnimatedIcon from "@/components/AnimatedIcon";
+import React, { useState, useEffect, useCallback } from "react";
+import TaxCalculator from "../../../../components/TaxCalculator";
+import AnimatedIcon from "../../../../components/AnimatedIcon";
 import {
   PieChart,
   Pie,
@@ -27,31 +27,47 @@ import {
   Briefcase,
 } from "lucide-react";
 
-const ATOTaxCalculatorsPage = () => {
-  const [taxData, setTaxData] = useState({
+interface TaxCalculationResult {
+  income: number;
+  incomeTax: number;
+  medicareLevy: number;
+  totalTax: number;
+  effectiveRate: number;
+  takeHomePay: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+  }>;
+  label?: string;
+}
+
+const ATOFinancialCalculatorsPage: React.FC = () => {
+  const [taxData, setTaxData] = useState<TaxCalculationResult>({
     income: 80000,
     incomeTax: 19792,
     medicareLevy: 1600,
+    totalTax: 21392,
+    effectiveRate: 26.74,
     takeHomePay: 58608,
   });
 
-  const [historicalRates, setHistoricalRates] = useState([
+  const [historicalRates] = useState([
+    { year: "2019-2020", rate: 32.5 },
+    { year: "2020-2021", rate: 32.5 },
     { year: "2021-2022", rate: 32.5 },
     { year: "2022-2023", rate: 32.5 },
     { year: "2023-2024", rate: 30.0 },
-    { year: "2024-2025", rate: 30.0 },
   ]);
 
   const COLORS = ["#1E3A8A", "#065F46", "#92400E"];
 
-  const handleTaxCalculation = (result) => {
-    setTaxData({
-      income: result.income,
-      incomeTax: result.incomeTax,
-      medicareLevy: result.medicareLevy,
-      takeHomePay: result.takeHomePay,
-    });
-  };
+  const handleTaxCalculation = useCallback((result: TaxCalculationResult) => {
+    setTaxData(result);
+  }, []);
 
   const pieChartData = [
     { name: "Income Tax", value: taxData.incomeTax },
@@ -59,7 +75,11 @@ const ATOTaxCalculatorsPage = () => {
     { name: "Take Home Pay", value: taxData.takeHomePay },
   ];
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip: React.FC<CustomTooltipProps> = ({
+    active,
+    payload,
+    label,
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-blue-400">
@@ -125,6 +145,7 @@ const ATOTaxCalculatorsPage = () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto space-y-20">
+        {/* Header */}
         <header className="text-center mb-16">
           <motion.h1
             className="text-5xl md:text-7xl font-extrabold mb-8 animate-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
@@ -132,7 +153,7 @@ const ATOTaxCalculatorsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            ATO Tax Calculators
+            ATO Financial Calculators
           </motion.h1>
           <motion.p
             className="text-xl max-w-3xl mx-auto"
@@ -140,17 +161,22 @@ const ATOTaxCalculatorsPage = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            Simplify your tax planning with our advanced ATO-compliant
+            Simplify your financial planning with our advanced ATO-compliant
             calculators. Get accurate estimates and insights into your tax
-            obligations.
+            obligations and financial future.
           </motion.p>
         </header>
+
+        {/* Tax Calculator Section */}
 
         <section>
           <TaxCalculator onIncomeChange={handleTaxCalculation} />
         </section>
 
+        {/* Charts Section */}
+
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* Tax Breakdown Pie Chart */}
           <motion.div
             className="bg-gray-800 p-6 rounded-lg shadow-lg"
             whileHover={{
@@ -178,6 +204,9 @@ const ATOTaxCalculatorsPage = () => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
                 >
                   {pieChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={`url(#color${index})`} />
@@ -202,6 +231,8 @@ const ATOTaxCalculatorsPage = () => {
               </PieChart>
             </ResponsiveContainer>
           </motion.div>
+
+          {/* Historical Tax Rates Line Chart */}
           <motion.div
             className="bg-gray-800 p-6 rounded-lg shadow-lg"
             whileHover={{
@@ -258,8 +289,8 @@ const ATOTaxCalculatorsPage = () => {
                 year.
               </li>
               <li>
-                Understand which deductions you're eligible for based on your
-                occupation and circumstances.
+                Understand which deductions you&apos;re eligible for based on
+                your occupation and circumstances.
               </li>
               <li>
                 Consider salary sacrificing into your superannuation to reduce
@@ -272,7 +303,7 @@ const ATOTaxCalculatorsPage = () => {
             </ul>
             <p>
               Remember, tax laws change frequently. Stay informed about the
-              latest updates from the ATO to ensure you're maximizing your
+              latest updates from the ATO to ensure you&apos;re maximizing your
               benefits while remaining compliant.
             </p>
           </div>
@@ -339,9 +370,9 @@ const ATOTaxCalculatorsPage = () => {
             <p>
               Tax deductions can significantly reduce your taxable income.
               Common deductions include work-related expenses, self-education
-              costs, and investment property expenses. It's crucial to keep
+              costs, and investment property expenses. It&apos;s crucial to keep
               accurate records and consult with a tax professional to ensure
-              you're claiming all eligible deductions.
+              you&apos;re claiming all eligible deductions.
             </p>
           </div>
           <div className="mt-8">
@@ -354,7 +385,7 @@ const ATOTaxCalculatorsPage = () => {
               superannuation contributions, understanding the tax implications
               of different retirement income streams, and exploring transition
               to retirement options. Remember, the earlier you start planning,
-              the more options you'll have in retirement.
+              the more options you&apos;ll have in retirement.
             </p>
           </div>
         </section>
@@ -363,4 +394,4 @@ const ATOTaxCalculatorsPage = () => {
   );
 };
 
-export default ATOTaxCalculatorsPage;
+export default ATOFinancialCalculatorsPage;

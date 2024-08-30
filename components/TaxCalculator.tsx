@@ -2,7 +2,18 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedIcon from "./AnimatedIcon";
 
-const taxBrackets = {
+interface TaxBracket {
+  min: number;
+  max: number;
+  rate: number;
+  base: number;
+}
+
+interface TaxYearBrackets {
+  [key: string]: TaxBracket[];
+}
+
+const taxBrackets: TaxYearBrackets = {
   "2019-2020": [
     { min: 0, max: 18200, rate: 0, base: 0 },
     { min: 18201, max: 37000, rate: 0.19, base: 0 },
@@ -34,58 +45,67 @@ const taxBrackets = {
   "2023-2024": [
     { min: 0, max: 18200, rate: 0, base: 0 },
     { min: 18201, max: 45000, rate: 0.19, base: 0 },
-    { min: 45001, max: 120000, rate: 0.3, base: 5092 },
-    { min: 120001, max: 180000, rate: 0.37, base: 27500 },
-    { min: 180001, max: Infinity, rate: 0.45, base: 49700 },
+    { min: 45001, max: 120000, rate: 0.325, base: 5092 },
+    { min: 120001, max: 180000, rate: 0.37, base: 29467 },
+    { min: 180001, max: Infinity, rate: 0.45, base: 51667 },
   ],
   "2024-2025": [
     { min: 0, max: 18200, rate: 0, base: 0 },
-    { min: 18201, max: 45000, rate: 0.19, base: 0 },
-    { min: 45001, max: 200000, rate: 0.3, base: 5092 },
-    { min: 200001, max: Infinity, rate: 0.45, base: 51592 },
+    { min: 18201, max: 45000, rate: 0.16, base: 0 },
+    { min: 45001, max: 135000, rate: 0.3, base: 4288 },
+    { min: 135001, max: 190000, rate: 0.37, base: 31288 },
+    { min: 190001, max: Infinity, rate: 0.45, base: 51638 },
   ],
 };
 
-const TaxCalculator = ({ onIncomeChange = () => {} }) => {
-  const [income, setIncome] = useState("80000");
-  const [taxYear, setTaxYear] = useState("2023-2024");
-  const [residencyStatus, setResidencyStatus] = useState("resident");
-  const [includeMedicare, setIncludeMedicare] = useState(true);
-  const [taxResult, setTaxResult] = useState(null);
-  const [showFAQ, setShowFAQ] = useState(false);
+interface TaxResult {
+  income: number;
+  incomeTax: number;
+  medicareLevy: number;
+  totalTax: number;
+  effectiveRate: number;
+  takeHomePay: number;
+}
+
+interface TaxCalculatorProps {
+  onIncomeChange: (result: TaxResult) => void;
+}
+
+const TaxCalculator: React.FC<TaxCalculatorProps> = ({ onIncomeChange }) => {
+  const [income, setIncome] = useState<string>("80000");
+  const [taxYear, setTaxYear] = useState<string>("2023-2024");
+  const [residencyStatus, setResidencyStatus] = useState<string>("resident");
+  const [includeMedicare, setIncludeMedicare] = useState<boolean>(true);
+  const [taxResult, setTaxResult] = useState<TaxResult | null>(null);
+  const [showFAQ, setShowFAQ] = useState<boolean>(false);
 
   const calculateTax = () => {
     const incomeNum = Number(income);
     let tax = 0;
-    let effectiveRate = 0;
     let medicareLevy = 0;
 
     const brackets = taxBrackets[taxYear];
 
     // Calculate base tax
-    for (const bracket of brackets) {
+    for (let i = 0; i < brackets.length; i++) {
+      const bracket = brackets[i];
       if (incomeNum > bracket.min) {
-        const taxableInBracket = Math.min(incomeNum, bracket.max) - bracket.min;
-        tax += bracket.base + taxableInBracket * bracket.rate;
+        if (incomeNum <= bracket.max || i === brackets.length - 1) {
+          tax = bracket.base + (incomeNum - bracket.min) * bracket.rate;
+          break;
+        }
       }
-      if (incomeNum <= bracket.max) break;
     }
 
-    // Calculate Medicare Levy
-    if (includeMedicare) {
-      if (incomeNum <= 23365) {
-        medicareLevy = 0;
-      } else if (incomeNum <= 29207) {
-        medicareLevy = (incomeNum - 23365) * 0.1;
-      } else {
-        medicareLevy = incomeNum * 0.02;
-      }
+    // Calculate Medicare Levy (2% for residents, not applicable for foreign residents)
+    if (includeMedicare && residencyStatus === "resident") {
+      medicareLevy = incomeNum * 0.02;
     }
 
     const totalTax = tax + medicareLevy;
-    effectiveRate = (totalTax / incomeNum) * 100;
+    const effectiveRate = (totalTax / incomeNum) * 100;
 
-    const result = {
+    const result: TaxResult = {
       income: incomeNum,
       incomeTax: tax,
       medicareLevy,
@@ -102,7 +122,7 @@ const TaxCalculator = ({ onIncomeChange = () => {} }) => {
     if (income) calculateTax();
   }, [income, taxYear, residencyStatus, includeMedicare]);
 
-  const handleIncomeChange = (e) => {
+  const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIncome = e.target.value;
     setIncome(newIncome);
   };
@@ -127,7 +147,7 @@ const TaxCalculator = ({ onIncomeChange = () => {} }) => {
           can be toggled on/off in the calculator.
         </li>
         <li>
-          Please note: This tool doesn't account for the Medicare Levy
+          Please note: This tool doesn&apos;t account for the Medicare Levy
           Surcharge, tax offsets, or rebates you might be eligible for.
         </li>
         <li>
