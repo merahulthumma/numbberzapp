@@ -1,7 +1,6 @@
-"use client";
-
 import React from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   MapPin,
   Phone,
@@ -12,6 +11,9 @@ import {
   Linkedin,
   Twitter,
   MessageCircle,
+  Calendar,
+  DollarSign,
+  FileText,
 } from "lucide-react";
 import AnimatedIcon from "./AnimatedIcon";
 
@@ -20,21 +22,13 @@ const ContactSection: React.FC = () => {
     {
       name: "Facebook",
       link: "https://www.facebook.com/Numberz.com.au/",
+      icon: Facebook,
       color: "text-blue-500",
     },
-    { name: "Instagram", link: "#", color: "text-pink-500" },
-    { name: "Linkedin", link: "#", color: "text-blue-700" },
-    { name: "Twitter", link: "#", color: "text-blue-400" },
+    { name: "Instagram", link: "#", icon: Instagram, color: "text-pink-500" },
+    { name: "LinkedIn", link: "#", icon: Linkedin, color: "text-blue-700" },
+    { name: "Twitter", link: "#", icon: Twitter, color: "text-blue-400" },
   ];
-
-  const borderVariants = {
-    initial: { pathLength: 0, opacity: 0 },
-    animate: {
-      pathLength: 1,
-      opacity: 1,
-      transition: { duration: 2, ease: "easeInOut" },
-    },
-  };
 
   const officeInfo = [
     {
@@ -52,27 +46,52 @@ const ContactSection: React.FC = () => {
     { icon: Phone, color: "text-green-400" },
     { icon: Mail, color: "text-blue-400" },
     { icon: Clock, color: "text-yellow-400" },
+    { icon: Calendar, color: "text-purple-400" },
+    { icon: DollarSign, color: "text-green-500" },
+    { icon: FileText, color: "text-indigo-400" },
+    { icon: MessageCircle, color: "text-pink-400" },
   ];
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
-      {/* Floating background icons */}
+      {/* Animated floating background icons */}
       {floatingIcons.map((icon, index) => (
         <motion.div
           key={index}
           className={`absolute ${icon.color} opacity-10`}
-          initial={{ x: Math.random() * 100, y: Math.random() * 100 }}
+          initial={{
+            x: `${Math.random() * 100}%`,
+            y: `${Math.random() * 100}%`,
+            scale: 0.5 + Math.random() * 0.5,
+          }}
           animate={{
-            x: [null, Math.random() * 100],
-            y: [null, Math.random() * 100],
+            x: [
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+            ],
+            y: [
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+            ],
+            rotate: [0, 90, 180, 270, 360],
+            scale: [
+              0.5 + Math.random() * 0.5,
+              1 + Math.random() * 0.5,
+              0.5 + Math.random() * 0.5,
+            ],
           }}
           transition={{
-            duration: 20 + Math.random() * 10,
+            duration: 30 + Math.random() * 20,
             repeat: Infinity,
             repeatType: "reverse",
+            ease: "linear",
           }}
         >
-          <icon.icon size={48 + Math.random() * 24} />
+          <icon.icon size={24 + Math.random() * 24} />
         </motion.div>
       ))}
 
@@ -98,8 +117,8 @@ const ContactSection: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          We&apos;re here to help! Whether you have questions about our services
-          or need expert advice, our team is ready to assist you.
+          We&lsquo;re here to help! Whether you have questions about our
+          services or need expert advice, our team is ready to assist you.
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -111,23 +130,6 @@ const ContactSection: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
             >
-              <svg
-                className="absolute inset-0 w-full h-full"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <motion.rect
-                  width="100%"
-                  height="100%"
-                  rx="12"
-                  ry="12"
-                  fill="none"
-                  stroke="#4F46E5"
-                  strokeWidth="2"
-                  variants={borderVariants}
-                  initial="initial"
-                  animate="animate"
-                />
-              </svg>
               <h3 className="text-2xl font-semibold mb-6">{office.title}</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -152,7 +154,7 @@ const ContactSection: React.FC = () => {
               <div className="mt-6 flex flex-col space-y-4">
                 <motion.a
                   href="mailto:contact@numberz.com.au"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -160,7 +162,7 @@ const ContactSection: React.FC = () => {
                 </motion.a>
                 <motion.a
                   href="tel:1300123435"
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center cursor-pointer"
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -171,7 +173,27 @@ const ContactSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Rest of the component remains the same */}
+        {/* Social media links */}
+        <motion.div
+          className="mt-16 flex justify-center space-x-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          {socialIcons.map((social) => (
+            <motion.a
+              key={social.name}
+              href={social.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${social.color} hover:text-white transition-colors duration-300`}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <social.icon size={24} />
+            </motion.a>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
