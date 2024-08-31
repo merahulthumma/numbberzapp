@@ -16,6 +16,13 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+  useClerk,
+} from "@clerk/nextjs";
 
 const navItems = [
   { name: "Home", href: "/", Icon: Home },
@@ -89,6 +96,7 @@ const Navbar: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   useEffect(() => {
     if (theme === "dark") {
@@ -161,6 +169,16 @@ const Navbar: React.FC = () => {
                 </div>
               ))}
             </div>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />{" "}
+            </SignedIn>
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
