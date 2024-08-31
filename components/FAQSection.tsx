@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, HelpCircle } from "lucide-react";
-import FuturisticCursor from "./FuturisticCursor";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import AnimatedIcon from "./AnimatedIcon";
+
 const faqs = [
   {
     question: "How can NumberzInsight help my small business?",
@@ -42,20 +42,11 @@ const faqs = [
   },
 ];
 
-const FAQSection: React.FC = () => {
+const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  };
 
   return (
-    <section
-      className="py-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
-      onMouseMove={handleMouseMove}
-    >
-      <FuturisticCursor mousePosition={mousePosition} />
+    <section className="py-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="flex items-center justify-center mb-12"
